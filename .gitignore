@@ -1,0 +1,10 @@
+venv
+app/__pycache__
+app/authentication/__pycache__
+app/backend/__pycache__
+app/authentication/models/__pycache__
+app/authentication/schemas/__pycache__
+app/authentication/views/__pycache__
+__pycache__
+.env
+static/

@@ -9,7 +9,7 @@ import urllib.parse
 from app.backend.model import *
 from app.authentication.schemas.crud_schema import CrudInSchema, CrudOutSchema
 from app.authentication.schemas.user_schema import UserSchema
-from app.backend.crud_schema import FaculteSchema, DepartementSchema, CategorieSchema
+from app.backend.crud_schema import FaculteSchema, DepartementSchema, CategorieSchema, MatiereSchema, UeSchema,FiliereSchema, ProgrammeSchema
 import json
 
 from datetime import datetime, timedelta
@@ -17,12 +17,6 @@ from datetime import datetime, timedelta
 crud_app = Blueprint("crud_app", __name__)
 crudIn=CrudInSchema()
 crudOut=CrudOutSchema()
-faculteSchema=FaculteSchema()
-facultesSchema=FaculteSchema(many=True)
-categorieSchema=CategorieSchema()
-categoriesSchema=CategorieSchema(many=True)
-departementSchema=DepartementSchema()
-departementsSchema=DepartementSchema(many=True)
 crud_privileges={
 
     "Publication": {
@@ -41,6 +35,22 @@ crud_privileges={
         "PUT": ["AP-104", "all"],
         "DELETE": ["AP-101", "all"],
     },
+        "Matiere": {
+        "POST": ["AP-101", "all"],
+        "FILTER": ["AP-101", "all"],
+        "GETALL": ["AP-102", "all"],
+        "GET": ["AP-103", "all"],
+        "PUT": ["AP-104", "all"],
+        "DELETE": ["AP-101", "all"],
+    },
+        "Ue": {
+        "POST": ["AP-101", "all"],
+        "FILTER": ["AP-101", "all"],
+        "GETALL": ["AP-102", "all"],
+        "GET": ["AP-103", "all"],
+        "PUT": ["AP-104", "all"],
+        "DELETE": ["AP-101", "all"],
+    },
       "Departement": {
         "POST": ["AP-101", "all"],
         "FILTER": ["AP-101", "all"],
@@ -50,6 +60,22 @@ crud_privileges={
         "DELETE": ["AP-101", "all"],
     },
        "Faculte": {
+        "POST": ["AP-101", "all"],
+        "FILTER": ["AP-101", "all"],
+        "GETALL": ["AP-102", "all"],
+        "GET": ["AP-103", "all"],
+        "PUT": ["AP-104", "all"],
+        "DELETE": ["AP-101", "all"],
+    },
+       "Filiere": {
+        "POST": ["AP-101", "all"],
+        "FILTER": ["AP-101", "all"],
+        "GETALL": ["AP-102", "all"],
+        "GET": ["AP-103", "all"],
+        "PUT": ["AP-104", "all"],
+        "DELETE": ["AP-101", "all"],
+    },
+       "Programme": {
         "POST": ["AP-101", "all"],
         "FILTER": ["AP-101", "all"],
         "GETALL": ["AP-102", "all"],
@@ -136,7 +162,7 @@ def function_crud(args):
         for k in entries_to_remove:
             body.pop(k, None)
         if data:
-            data.update(**body , updated_by=token_auth.current_user(), updated_at=datetime.now().isoformat())
+            data.update(**body , updated_by=token_auth.current_user(), updated_at=datetime.now())
 
             return {"data": [json.loads(data.to_json())], "message": "ok", "status":"200"}
         else:
@@ -176,29 +202,31 @@ def function_crudv2(args):
     @permission(token_auth, privileges=crud_privileges[collection][method])
     def creation(collection, body):
         try:
-            data_in=globals()[f'{collection.lower()}Schema'].load(body)
+            data_in=globals()[f'{collection}Schema']().load(body)
         except ValidationError as error:
             print(error)
             abort(403, error.messages)
         data_in.created_by=token_auth.current_user()
         data_in.created_at=datetime.now()
+        data_in.updated_at=datetime.now()
+        data_in.updated_by=token_auth.current_user()
         data_in.save()
         # data=globals()[collection](**data_in.data, 
         #                            created_by=token_auth.current_user())
         
         # data.save()   
         
-        return {"data": globals()[f'{collection.lower()}Schema'].dump(data_in), "message": "ok", "status":"200"}
+        return {"data": globals()[f'{collection}Schema']().dump(data_in), "message": "ok", "status":"200"}
     @authenticate(token_auth)
     @permission(token_auth, privileges=crud_privileges[collection][method])
     def get_all(collection):
         data=globals()[collection].objects()
         print(globals()[f'{collection.lower()}sSchema'].dump(data).data)
-        return {"data": globals()[f'{collection.lower()}sSchema'].dump(data), "message": "ok", "status":"200"}
+        return {"data": globals()[f'{collection}Schema'](many=True).dump(data), "message": "ok", "status":"200"}
     # @permission(token_auth, privileges=crud_privileges[collection][method])
     def filter(collection,filter_req):
         data=globals()[collection].objects(**filter_req)
-        return {"data": globals()[f'{collection.lower()}sSchema'].dump(data), "message": "ok", "status":"200"}
+        return {"data": globals()[f'{collection}Schema'](many=True).dump(data), "message": "ok", "status":"200"}
     @authenticate(token_auth)
     @permission(token_auth, privileges=crud_privileges[collection][method])
     def get_by_id(collection, id):
@@ -206,27 +234,30 @@ def function_crudv2(args):
         
         if data:
             
-            return {"data": globals()[f'{collection.lower()}Schema'].dump(data).data, "message": "ok", "status":"200"}
+            return {"data": globals()[f'{collection}Schema']().dump(data).data, "message": "ok", "status":"200"}
         else:
             return {"data": [], "message": "Not found", "status":"401"}
     @authenticate(token_auth)
     @permission(token_auth, privileges=crud_privileges[collection][method])
     def update(collection, id, body):
         data=globals()[collection].objects(_id=bson.ObjectId(id)).first()
-        
         entries_to_remove = ('created_by', 'updated_by', 'created_at', 'updated_at')
         for k in entries_to_remove:
             body.pop(k, None)
 
         try:
-            data_in=globals()[f'{collection.lower()}Schema'].load(body)
+            data_in=globals()[f'{collection}Schema']().load(body)
         except ValidationError as error:
-            abort(403)
-        data_in= globals()[f'{collection.lower()}Schema'].dump(data_in)
-        if data:
-            data.update(**data_in, updated_at=datetime.now(), updated_by=token_auth.current_user() )
-            print(data.created_by)
-            return {"data": globals()[f'{collection.lower()}Schema'].dump(data), "message": "ok", "status":"200"}
+            abort(403, error.messages)
+        print(data_in.__dict__)
+        # data_in= globals()[f'{collection.lower()}Schema'].dump(data_in)
+        if data_in:
+            data_in.updated_at=datetime.now()
+            data_in.updated_by=token_auth.current_user()
+            data_in.created_at=data.created_at
+            data_in.created_by=data.created_by
+            data_in.save()
+            return {"data": globals()[f'{collection}Schema']().dump(data_in), "message": "ok", "status":"200"}
         else:
             return {"data": [], "message": "Not found", "status":"411"}
     @authenticate(token_auth)

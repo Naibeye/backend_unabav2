@@ -59,7 +59,6 @@ class SessionTokenSchema(ma.Schema):
 class PrivilegeSchema(ma.Schema):
     class Meta:
         ordered = True
-
     value = ma.String(required=True)
     label = ma.String(required=True)
     children = ma.Nested("PrivilegeSchema", dump_only=True, many=True)

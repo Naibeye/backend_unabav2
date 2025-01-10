@@ -46,5 +46,5 @@ class ProdConfig:
     UPLOAD_IMAGE_EXTENSIONS= ['.jpg', '.jpeg','.png', '.gif']
     UPLOAD_PATH = os.path.join(basedir,'static/uploads')
     # Adminstation Init
-    ADMIN_MAIL_UA=os.environ.get("ADMIN_MAIL_UA")
+    ADMIN_MAIL_UA=os.environ.get("ADMIN_MAIL_UA") 
     ADMIN_PASSWORD_UA=os.environ.get("ADMIN_PASSWORD_UA")
