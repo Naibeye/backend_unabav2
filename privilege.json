@@ -1,0 +1,85 @@
+{
+    "PRIVILEGES": [
+      {
+        "value": "AP-100",
+        "label": "Gestion utilisateur",
+        "children": [
+          {
+            "value": "AP-101",
+            "label": "Creer utilisateur"
+          },
+          {
+            "value": "AP-102",
+            "label": "Modifier utilisateur"
+          },
+          {
+            "value": "AP-103",
+            "label": "Lister utilisateur"
+  
+          },
+          {
+            "value": "AP-104",
+            "label": "Supprimer utilisateur"
+          },
+          {
+            "value": "AP-105",
+            "label": "Voir infos utilisateur",
+            "children": [
+              {
+                "value": "AP-1051",
+                "label": "Creer utilisateur"
+              },
+              {
+                "value": "AP-1052",
+                "label": "Modifier utilisateur"
+              },
+              {
+                "value": "AP-1053",
+                "label": "Lister utilisateur"
+      
+              },
+              {
+                "value": "AP-1054",
+                "label": "Supprimer utilisateur"
+              },
+              {
+                "value": "AP-1055",
+                "label": "Voir infos utilisateur"
+              }
+              
+            ]
+          }
+          
+        ]
+      },
+      {
+        "value": "AP-110",
+        "label": "Gestion utilisateur",
+        "children": [
+          {
+            "value": "AP-111",
+            "label": "Creer utilisateur"
+          },
+          {
+            "value": "AP-112",
+            "label": "Modifier utilisateur"
+          },
+          {
+            "value": "AP-113",
+            "label": "Lister utilisateur"
+  
+          },
+          {
+            "value": "AP-114",
+            "label": "Supprimer utilisateur"
+          },
+          {
+            "value": "AP-115",
+            "label": "Voir infos utilisateur"
+          }
+          
+        ]
+      }
+     
+    ]
+  }
